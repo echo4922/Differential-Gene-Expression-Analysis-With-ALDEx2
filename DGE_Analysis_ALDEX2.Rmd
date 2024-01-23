@@ -1,0 +1,52 @@
+---
+title: "R Notebook DGE Analysis"
+author: Eddie Cho
+output: html_notebook
+---
+
+#Step 0: load libraries/packages
+```{r setup, message = TRUE}
+library("ALDEx2")
+library("parallel")
+library("BiocParallel")
+
+print("Done. ALDEx2 loaded")
+```
+
+#Step 1: remove objects from current enviornment & get current working directory
+```{r}
+rm(list = ls())
+getwd()
+```
+
+#Step 2: Load FeatureCounts data
+```{r}
+data_WT42_AB8 <-read.csv("Feature_Counts_Data_set.csv", header = T, row.names = 1)
+```
+
+#Step 3: Display first 6 rows and dimension of data
+```{r}
+head(data_WT42_AB8)
+dim(data_WT42_AB8)
+```
+
+#Step 4: create condition vector 
+```{r}
+ conds <- c(    rep("AB8", 3), rep("ABWT", 3)   )     
+
+print(conds)
+```
+
+#Step 5: create aldex.clr object and apply effet. Then, perform t-test
+```{r}
+aldex_t <- aldex(data_WT42_AB8, conds, mc.samples = 128, test="t", effect = TRUE, include.sample.summary = TRUE, verbose = TRUE, useMC = TRUE)
+
+print("clr tranformed t-test done.")
+```
+
+#Step 6: export to csv
+```{r}
+write.csv(aldex_t, "Flipped_Aldex2_Conds_AB8_then_AB42_t_Results_08_01_2023.csv")
+```
+
+
